@@ -1,3 +1,10 @@
+import os
+from pathlib import Path
+# from dotenv import load_dotenv
+from pathlib import Path
+import pymysql
+pymysql.install_as_MySQLdb()
+
 """
 Django settings for toptech project.
 
@@ -23,10 +30,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-cil_2or-7)k-3r!963q_znr(5br_^qs+disxkw1*4)eqxo%r11'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    'toptech.pythonanywhere.com',
+    'localhost',
+    '127.0.0.1',
+]
 
 # Application definition
 
@@ -40,8 +50,8 @@ INSTALLED_APPS = [
     'store.apps.StoreConfig',
 ]
 
-# LOGIN_REDIRECT_URL = 'home'
-# LOGOUT_REDIRECT_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,11 +88,14 @@ WSGI_APPLICATION = 'toptech.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'toptech',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
