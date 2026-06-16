@@ -11,3 +11,4 @@ class MainConfig(AppConfig):
 
 def ready(self):
     import store.signals
+

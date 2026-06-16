@@ -1,0 +1,30 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Order Confirmed - Top Tech{% endblock %}
+
+{% block content %}
+    <section class="hero" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+        <h1>🎉 Order Confirmed!</h1>
+        <p class="subtitle">Thank you for your purchase</p>
+    </section>
+
+    <section class="success-section">
+        <div class="success-container">
+            <h2>Your order has been received</h2>
+            
+            <div class="order-info">
+                <p><strong>Product:</strong> {{ product.name }}</p>
+                <p><strong>Amount Paid:</strong> ₦{{ order.amount }}</p>
+                <p><strong>Reference:</strong> {{ order.reference }}</p>
+            </div>
+
+            <div class="delivery-info">
+                <h3>Delivery Information</h3>
+                <p>Your order will be delivered within <strong>9 working days</strong>.</p>
+                <p>We will contact you via email or phone for delivery updates.</p>
+            </div>
+
+            <a href="{% url 'shop' %}" class="btn-primary">Continue Shopping</a>
+        </div>
+    </section>
+{% endblock %}
