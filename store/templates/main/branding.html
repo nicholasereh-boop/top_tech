@@ -1,7 +1,39 @@
-{% extends 'main/base.html' %}
+
 {% load static %}
 
 {% block title %}Enick Tech{% endblock %}
+
+{% block extra_css %}
+<style>
+.branding-container{
+    max-width:1200px;
+    margin:auto;
+    padding:40px 20px;
+}
+
+.gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:25px;
+}
+
+.brand-card{
+    background:#fff;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.brand-card:hover{
+    transform:translateY(-8px);
+}
+
+.brand-info{
+    padding:20px;
+}
+</style>
+{% endblock %}
 
 {% block content %}
     <div class="branding-container">

@@ -1,8 +1,8 @@
 from django import forms
-from .models import ContactMessage
+from .models import ContactMessage, UserProfile, Product
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import UserProfile
+
 
 
 class SignupForm(UserCreationForm):
@@ -80,3 +80,20 @@ class RegisterForm(UserCreationForm):
 class CreateNewList(forms.Form):
     name = forms.CharField(label="Name", max_length=200)
     check = forms.BooleanField(required=False)
+
+
+
+class ProductForm(forms.ModelForm):
+
+    class Meta:
+        model = Product
+        fields = [
+            'name',
+            'description',
+            'price',
+            'image',
+            'product_type',
+            'digital_file',
+            'stock',
+            'is_active',
+        ]

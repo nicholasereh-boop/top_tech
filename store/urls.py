@@ -4,7 +4,6 @@ from .views import login_view, admin_dashboard, logout_view, custom_admin_view, 
 from . import views
 from .views import home, signup
 from django.conf import settings
-from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -50,6 +49,7 @@ urlpatterns = [
     
     path('dashboard/orders/', views.admin_orders, name='admin_orders'),
     path('dashboard/products/', views.admin_products, name='admin_products'),
+    path('admin-panel/products/add/', views.add_product, name='add_product'),
     path('dashboard/users/', views.admin_users, name='admin_users'),
     path('dashboard/messages/', views.admin_messages, name='admin_messages'),
     path('dashboard/product/delete/<int:pk>/', views.delete_product, name='delete_product'),

@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
-from .forms import SignupForm, LoginForm, PasswordVerificationForm
+from .forms import SignupForm, LoginForm, PasswordVerificationForm, ProductForm
 from .models import UserProfile, ContactMessage
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
@@ -398,6 +398,42 @@ def delete_product(request, pk):
 
 @login_required
 @user_passes_test(is_admin)
+def add_product(request):
+
+    if request.method == 'POST':
+        form = ProductForm(
+            request.POST,
+            request.FILES
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                "Product added successfully."
+            )
+
+            return redirect('admin_products')
+
+    else:
+        form = ProductForm()
+
+    return render(
+        request,
+        'custom_admin/add_product.html',
+        {
+            'form': form
+        }
+    )
+
+
+
+
+
+
+@login_required
+@user_passes_test(is_admin)
 def admin_users(request):
     users = User.objects.all()
 
@@ -443,7 +479,8 @@ def admin_panel(request):
 
 # ====================== SHOP & PAYMENT ======================
 def shop(request):
-    products = Product.objects.all()
+    products = Product.objects.filter(is_active=True)
+
     return render(request, 'main/shop.html', {'products': products})
 
 
