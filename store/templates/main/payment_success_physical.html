@@ -1,4 +1,26 @@
-{% extends 'main/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+.success-container{
+    max-width:700px;
+    margin:50px auto;
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.order-info,
+.delivery-info{
+    background:#f8fafc;
+    padding:20px;
+    border-radius:15px;
+    margin:20px 0;
+}
+</style>
+{% endblock %}
 
 {% block title %}Order Confirmed - Top Tech{% endblock %}
 

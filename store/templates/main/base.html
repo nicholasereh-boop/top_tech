@@ -17,7 +17,9 @@
 <body>
     <nav>
         <div class="topnav">
-            <button class="openbtn" onclick="openNav()">☰</button>            
+            <button class="openbtn" onclick="openNav()">☰</button>
+            <a href="{% url 'shop' %}" class="btn-primary">Shop Our Art</a>
+            <a href="{% url 'portfolio' %}" class="btn-secondary">View Our Portfolio</a>            
             <a href="{% url 'shop' %}" class="logo">TOP Tech</a>
                        
         </div> 
@@ -48,10 +50,6 @@
                 We craft powerful branding, advertising visuals, clothing designs, 
                 and original artwork to help your business stand out and grow.
             </p>
-            <div class="hero-buttons">
-                <a href="{% url 'shop' %}" class="btn-primary">Shop Our Art</a>
-                <a href="{% url 'portfolio' %}" class="btn-secondary">View Our Portfolio</a>
-            </div>
         </section>
 
         <!-- SERVICES / WHAT WE DO -->
@@ -125,19 +123,7 @@
 
 
 
-   <!-- HERO SECTION -->
-<section class="hero">
-    <div class="hero-content">
-        <h1>Creative Design That <span class="highlight">Sells</span></h1>
-        <p class="subtitle">
-            We craft powerful branding, advertising visuals, clothing designs, 
-            and original artwork to help your business stand out and grow.
-        </p>
-        
-       
-
-    </div>
-</section>
+  
 <!-- WhatsApp Floating Button -->
 <a href="https://wa.me/2348123456789?text=Hello%20I%20need%20your%20service" 
    class="whatsapp-float" 

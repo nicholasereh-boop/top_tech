@@ -195,7 +195,7 @@ def signup_view(request):
 
             send_verification_email(request, user)
             messages.success(request, "Account created! Please check your email to verify.")
-            return redirect('login')
+            return redirect('custom_login')
     else:
         form = UserCreationForm()
 

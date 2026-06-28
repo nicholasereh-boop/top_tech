@@ -1,6 +1,37 @@
-{% extends 'main/base.html' %}
+
 
 {% block title %}Contact Admin - Top Tech{% endblock %}
+
+{% block extra_css %}
+<style>
+.contact-form-container{
+    max-width:800px;
+    margin:auto;
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.form-group{
+    margin-bottom:20px;
+}
+
+.form-control{
+    width:100%;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+.alert{
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:20px;
+    background:#dcfce7;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 
