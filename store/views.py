@@ -3,10 +3,9 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
-from .forms import SignupForm, LoginForm, PasswordVerificationForm, ProductForm
-from .models import UserProfile, ContactMessage
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.models import User
+from .forms import PasswordVerificationForm, ProductForm
+from .models import ContactMessage
+from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -15,10 +14,13 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.urls import reverse
 from django.db import models
+from django.shortcuts import render
+from django.conf import settings
+from .models import Order, ContactMessage
+from catalog.models import Product
+from .forms import MessageForm
 
-
-from .models import ToDolist, Item, Order, Product, ContactMessage, UserProfile
-from .forms import CreateNewList, MessageForm, RegisterForm
+User = get_user_model()
 
 import uuid
 import requests
@@ -27,7 +29,7 @@ import hmac
 import hashlib
 from django.views.decorators.csrf import csrf_exempt
 
-
+user = settings.AUTH_USER_MODEL
 
 class OrderAdminHelper:
     """Helper class for custom admin order functions"""
@@ -60,87 +62,23 @@ class OrderAdminHelper:
         return recovered
 
 
+
+# 404 NOT FOUND
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
+
 # ====================== AUTHENTICATION ======================
 
 def home(request):
     # If user is not logged in, send them to signup
-    if not request.user.is_authenticated:
-        return redirect('signup')
+    # if not request.user.is_authenticated:
+        # return redirect('accounts:register')
 
-    return render(request, 'main/base.html')
+    return render(request, 'core/base.html')
 
 
 
-def signup(request):
-
-    if request.user.is_authenticated:
-        return redirect('home')
-
-    if request.method == 'POST':
-
-        form = SignupForm(request.POST)
-
-        if form.is_valid():
-
-            # Create User
-            user = User.objects.create_user(
-                username=form.cleaned_data['email'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password1'],
-                first_name=form.cleaned_data['first_name']
-            )
-
-            # Create Profile
-            profile = UserProfile.objects.create(
-                user=user,
-                other_names=form.cleaned_data['other_names'],
-                date_of_birth=form.cleaned_data['date_of_birth'],
-                phone=form.cleaned_data['phone']
-            )
-
-            # Login user
-            login(request, user)
-
-            messages.success(
-                request,
-                "Account created successfully!"
-            )
-
-            return redirect('home')
-
-    else:
-        form = SignupForm()
-
-    return render(
-        request,
-        'main/signup.html',
-        {
-            'form': form
-        }
-    )
-# if user.is_staff or user.is_superuser:
-#     return redirect('admin_dashboard')
-# else:
-#     return redirect('home')
-
-def user_login(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, "Login successful!")
-                return redirect('home')
-            else:
-                messages.error(request, "Invalid username or password.")
-    else:
-        form = LoginForm()
-    return render(request, 'main/login.html', {'form': form})
-
-@login_required
+# @login_required
 def password_verify(request):
     """Simple password verification page (e.g., before sensitive actions)"""
     if request.method == 'POST':
@@ -156,12 +94,6 @@ def password_verify(request):
         form = PasswordVerificationForm()
     return render(request, 'password_verify.html', {'form': form})
 
-def user_logout(request):
-    logout(request)
-    messages.info(request, "You have been logged out.")
-    return redirect('login')
-
-
 # def home(request):
 #     return render(request, 'home')
 
@@ -169,7 +101,7 @@ def user_logout(request):
 
 
 def index(request):
-    return render(request, "main/base.html", {})
+    return render(request, "core/base.html", {})
 
 
 
@@ -233,10 +165,10 @@ def verify_email(request, uidb64, token):
         user.is_active = True
         user.save()
         messages.success(request, "Email verified successfully! You can now login.")
-        return redirect('login')
+        return redirect('custom_login')
     else:
         messages.error(request, "Verification link is invalid or has expired.")
-        return redirect('signup')
+        return redirect('custom_signup')
 
 
 
@@ -245,56 +177,57 @@ def verify_email(request, uidb64, token):
 # LOGIN VIEW
 # =========================
 def login_view(request):
+    pass
 
-    if request.user.is_authenticated:
-        return redirect('admin_dashboard')
+    # if request.user.is_authenticated:
+    #     return redirect('admin_dashboard')
 
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+    # if request.method == 'POST':
+    #     username = request.POST.get('username')
+    #     password = request.POST.get('password')
 
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
+    #     user = authenticate(
+    #         request,
+    #         username=username,
+    #         password=password
+    #     )
 
-        if user is not None:
+    #     if user is not None:
 
-            if user.is_staff or user.is_superuser:
-                login(request, user)
-                return redirect('admin_dashboard')
+    #         if user.is_staff or user.is_superuser:
+    #             login(request, user)
+    #             return redirect('admin_dashboard')
 
-            else:
-                messages.error(
-                    request,
-                    'You do not have permission to access this dashboard.'
-                )
+    #         else:
+    #             messages.error(
+    #                 request,
+    #                 'You do not have permission to access this dashboard.'
+    #             )
 
-        else:
-            messages.error(
-                request,
-                'Invalid username or password.'
-            )
+    #     else:
+    #         messages.error(
+    #             request,
+    #             'Invalid username or password.'
+    #         )
 
-    return render(
-        request,
-        'custom_admin/custom_login.html'
-    )
+    # return render(
+    #     request,
+    #     'custom_admin/custom_login.html'
+    # )
 
 # =========================
 # ADMIN DASHBOARD
 # =========================
 
-@login_required
+# @login_required
 @user_passes_test(is_admin)
 def custom_admin_view(request):
 
     return redirect('admin_dashboard')
 
 
-@login_required
-@user_passes_test(is_admin)
+# @login_required
+# @user_passes_test(is_admin)
 def admin_dashboard(request):
 
     total_users = User.objects.count()
@@ -315,7 +248,7 @@ def admin_dashboard(request):
     
     recent_orders = Order.objects.order_by('-created_at')[:10]
     recent_products = Product.objects.order_by('-created_at')[:10]
-    recent_messages = ContactMessage.objects.order_by('-date_sent')[:10]
+    recent_messages = ContactMessage.objects.order_by('-created_at')[:10]
 
     context = {
         'title': 'Admin Dashboard',
@@ -338,8 +271,8 @@ def admin_dashboard(request):
     )
 
 
-@login_required
-@user_passes_test(is_admin)
+# @login_required
+# @user_passes_test(is_admin)
 def admin_orders(request):
     orders = Order.objects.all().order_by('-created_at')
 
@@ -359,8 +292,8 @@ def admin_orders(request):
 
     return render(request, 'custom_admin/orders.html', context)
 
-@login_required
-@user_passes_test(is_admin)
+# @login_required
+# @user_passes_test(is_admin)
 def admin_products(request):
     products = Product.objects.all()
 
@@ -370,8 +303,8 @@ def admin_products(request):
         {'products': products}
     )
 
-@login_required
-@user_passes_test(is_admin)
+# @login_required
+# @user_passes_test(is_admin)
 def delete_product(request, pk):
 
     product = get_object_or_404(Product, pk=pk)
@@ -396,8 +329,8 @@ def delete_product(request, pk):
 
 
 
-@login_required
-@user_passes_test(is_admin)
+# @login_required
+# @user_passes_test(is_admin)
 def add_product(request):
 
     if request.method == 'POST':
@@ -432,8 +365,8 @@ def add_product(request):
 
 
 
-@login_required
-@user_passes_test(is_admin)
+# @login_required
+# @user_passes_test(is_admin)
 def admin_users(request):
     users = User.objects.all()
 
@@ -444,10 +377,10 @@ def admin_users(request):
     )
 
 
-@login_required
-@user_passes_test(is_admin)
+# @login_required
+# @user_passes_test(is_admin)
 def admin_messages(request):
-    messages_list = ContactMessage.objects.all().order_by('-date_sent')
+    messages_list = ContactMessage.objects.all().order_by('-created_at')
 
     return render(
         request,
@@ -481,7 +414,7 @@ def admin_panel(request):
 def shop(request):
     products = Product.objects.filter(is_active=True)
 
-    return render(request, 'main/shop.html', {'products': products})
+    return render(request, 'services/shop.html', {'products': products})
 
 
 def checkout(request, product_id):
@@ -494,7 +427,7 @@ def checkout(request, product_id):
 
         if not full_name or not email:
             messages.error(request, "Full Name and Email are required.")
-            return render(request, 'main/checkout.html', {'product': product})
+            return render(request, 'payment/checkout.html', {'product': product})
 
         amount_in_kobo = int(product.price * 100)
         reference = str(uuid.uuid4())
@@ -541,7 +474,7 @@ def checkout(request, product_id):
 
         return redirect('checkout', product_id=product_id)
 
-    return render(request, 'main/checkout.html', {'product': product})
+    return render(request, 'payments/checkout.html', {'product': product})
 
 
 def verify_payment(request):
@@ -563,7 +496,7 @@ def verify_payment(request):
             order = Order.objects.get(reference=reference)
             order.verified = True
             order.status = 'paid'
-            # Product not yet delivered j
+            # Product not yet delivered
             order.purchase_completed = False
             order.save()
 
@@ -585,7 +518,7 @@ def verify_payment(request):
                     return redirect('download_product', product_id=product.id)
                 else:
                     # Physical Product → Show Success Message
-                    return render(request, 'main/payment_success_physical.html', {
+                    return render(request, 'payment/payment_success_physical.html', {
                         'order': order,
                         'product': product
                     })
@@ -603,7 +536,7 @@ def verify_payment(request):
 
 
 def payment_success(request):
-    return render(request, 'main/payment_success.html')
+    return render(request, 'payment/payment_success.html')
     
 
 @csrf_exempt
@@ -708,23 +641,21 @@ def buy_now(request, product_id):
 # ====================== OTHER PAGES ======================
 
 def branding(request):
-    return render(request, "main/branding.html", {})
+    return render(request, "services/branding.html", {})
 
 
 def social(request):
-    return render(request, "main/social.html", {})
+    return render(request, "services/social.html", {})
 
 
-def flyer(request):
-    return render(request, "main/flyer.html", {})
+# def flyer(request):
+#     return render(request, "main/flyer.html", {})
 
 
 def clothing(request):
-    return render(request, "main/clothing.html", {})
+    return render(request, "products/clothing.html", {})
 
 
-def portfolio(request):
-    return render(request, "main/portfolio.html", {})
 
 def contact_admin(request):
     if request.method == "POST":
@@ -779,18 +710,7 @@ View in Admin Panel: http://127.0.0.1:8000/dashboard/
         except Exception as e:
             messages.error(request, "Failed to send message. Please try again later.")
 
-    return render(request, 'main/contact.html', {})
-
-
-# ====================== TODO LIST ======================
-def list(request, id=None):
-    """Show a specific ToDo list"""
-    if id is None:
-        lists = ToDolist.objects.all()
-        return render(request, "main/list.html", {"lists": lists})
-    
-    ls = get_object_or_404(ToDolist, id=id)
-    return render(request, "main/list.html", {"ls": ls})
+    return render(request, 'core/contact.html', {})
 
 
 
