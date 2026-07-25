@@ -1,0 +1,91 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+
+<div class="logout-container">
+
+    <div class="logout-card">
+
+        <h2>Logout</h2>
+
+        <p>
+            Are you sure you want to log out of your account?
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <button type="submit" class="btn-danger">
+                Yes, Logout
+            </button>
+
+            <a href="{% url 'user_dashboard' %}" class="btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+<style>
+
+.logout-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:80vh;
+    background:#f4f7fb;
+}
+
+.logout-card{
+    width:420px;
+    background:#fff;
+    border-radius:15px;
+    padding:40px;
+    text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,.1);
+}
+
+.logout-card h2{
+    margin-bottom:15px;
+    color:#222;
+}
+
+.logout-card p{
+    color:#666;
+    margin-bottom:30px;
+}
+
+.btn-danger{
+    background:#dc3545;
+    color:#fff;
+    border:none;
+    padding:12px 25px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    margin-right:10px;
+}
+
+.btn-danger:hover{
+    background:#bb2d3b;
+}
+
+.btn-secondary{
+    display:inline-block;
+    text-decoration:none;
+    background:#6c757d;
+    color:#fff;
+    padding:12px 25px;
+    border-radius:8px;
+}
+
+.btn-secondary:hover{
+    background:#565e64;
+}
+
+</style>
+
+{% endblock %}

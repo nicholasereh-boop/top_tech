@@ -6,10 +6,11 @@ from . import views
 app_name = "accounts"
 
 urlpatterns = [
+    path("signup/", views.signup, name="signup"),
     path("login/", views.login_view, name="login"),
-    path("register/", views.register_view, name="register"),
+    # path("register/", views.register_view, name="register"),
     path("logout/", views.logout_view, name="logout"),
-    path("verify-email/<uidb64>/<token>/", views.verify_email, name="verify_email"),
+    # path("verify-email/<uidb64>/<token>/", views.verify_email, name="verify_email"),
 
     # Password reset - using Django's built-in views, just our templates.
     path(
@@ -44,4 +45,9 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
+
+    # path("logout/", views.user_logout, name="logout"),
+
+    path("dashboard/",views.user_dashboard,name="user_dashboard",),
 ]
+

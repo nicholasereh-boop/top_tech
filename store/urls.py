@@ -49,4 +49,11 @@ urlpatterns = [
     path('dashboard/users/', views.admin_users, name='admin_users'),
     path('dashboard/messages/', views.admin_messages, name='admin_messages'),
     path('dashboard/product/delete/<uuid:pk>/', views.delete_product, name='delete_product'),
+
+
+    # user_dashbord
+    path('user_dashboard/',views.user_dashboard,name='user_dashboard'),
+    
+    path("logout/", views.user_logout, name="logout"),
+
 ]

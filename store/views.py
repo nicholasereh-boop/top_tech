@@ -14,6 +14,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.urls import reverse
 from django.db import models
+from django.db.models import Sum 
 from django.shortcuts import render
 from django.conf import settings
 from .models import Order, ContactMessage
@@ -71,14 +72,14 @@ def custom_404(request, exception):
 
 def home(request):
     # If user is not logged in, send them to signup
-    # if not request.user.is_authenticated:
-        # return redirect('accounts:register')
+    if not request.user.is_authenticated:
+        return redirect('accounts:signup')
 
     return render(request, 'core/base.html')
 
 
 
-# @login_required
+@login_required
 def password_verify(request):
     """Simple password verification page (e.g., before sensitive actions)"""
     if request.method == 'POST':
@@ -113,9 +114,6 @@ def index(request):
 # Check if user is staff or superuser
 def is_admin(user):
     return user.is_staff or user.is_superuser
-
-
-
 def signup_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -165,10 +163,10 @@ def verify_email(request, uidb64, token):
         user.is_active = True
         user.save()
         messages.success(request, "Email verified successfully! You can now login.")
-        return redirect('custom_login')
+        return redirect('login')
     else:
         messages.error(request, "Verification link is invalid or has expired.")
-        return redirect('custom_signup')
+        return redirect('signup')
 
 
 
@@ -177,57 +175,57 @@ def verify_email(request, uidb64, token):
 # LOGIN VIEW
 # =========================
 def login_view(request):
-    pass
+    # pass
 
-    # if request.user.is_authenticated:
-    #     return redirect('admin_dashboard')
+    if request.user.is_authenticated:
+        return redirect('admin_dashboard')
 
-    # if request.method == 'POST':
-    #     username = request.POST.get('username')
-    #     password = request.POST.get('password')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-    #     user = authenticate(
-    #         request,
-    #         username=username,
-    #         password=password
-    #     )
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
 
-    #     if user is not None:
+        if user is not None:
 
-    #         if user.is_staff or user.is_superuser:
-    #             login(request, user)
-    #             return redirect('admin_dashboard')
+            if user.is_staff or user.is_superuser:
+                login(request, user)
+                return redirect('admin_dashboard')
 
-    #         else:
-    #             messages.error(
-    #                 request,
-    #                 'You do not have permission to access this dashboard.'
-    #             )
+            else:
+                messages.error(
+                    request,
+                    'You do not have permission to access this dashboard.'
+                )
 
-    #     else:
-    #         messages.error(
-    #             request,
-    #             'Invalid username or password.'
-    #         )
+        else:
+            messages.error(
+                request,
+                'Invalid username or password.'
+            )
 
-    # return render(
-    #     request,
-    #     'custom_admin/custom_login.html'
-    # )
+    return render(
+        request,
+        'custom_admin/custom_login.html'
+    )
 
 # =========================
 # ADMIN DASHBOARD
 # =========================
 
-# @login_required
+@login_required
 @user_passes_test(is_admin)
 def custom_admin_view(request):
 
     return redirect('admin_dashboard')
 
 
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def admin_dashboard(request):
 
     total_users = User.objects.count()
@@ -271,8 +269,8 @@ def admin_dashboard(request):
     )
 
 
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def admin_orders(request):
     orders = Order.objects.all().order_by('-created_at')
 
@@ -292,8 +290,8 @@ def admin_orders(request):
 
     return render(request, 'custom_admin/orders.html', context)
 
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def admin_products(request):
     products = Product.objects.all()
 
@@ -303,8 +301,8 @@ def admin_products(request):
         {'products': products}
     )
 
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def delete_product(request, pk):
 
     product = get_object_or_404(Product, pk=pk)
@@ -329,8 +327,8 @@ def delete_product(request, pk):
 
 
 
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def add_product(request):
 
     if request.method == 'POST':
@@ -365,8 +363,8 @@ def add_product(request):
 
 
 
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def admin_users(request):
     users = User.objects.all()
 
@@ -377,8 +375,8 @@ def admin_users(request):
     )
 
 
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def admin_messages(request):
     messages_list = ContactMessage.objects.all().order_by('-created_at')
 
@@ -667,11 +665,11 @@ def contact_admin(request):
         # Validation
         if len(name) < 3:
             messages.error(request, "Name must be at least 3 characters.")
-            return render(request, 'main/contact.html', {})
+            return render(request, 'core/contact.html', {})
 
         if len(message_text) < 20:
             messages.error(request, "Message must be at least 20 characters.")
-            return render(request, 'main/contact.html', {})
+            return render(request, 'core/contact.html', {})
 
         try:
             # Save message to database
@@ -713,4 +711,43 @@ View in Admin Panel: http://127.0.0.1:8000/dashboard/
     return render(request, 'core/contact.html', {})
 
 
+
+
+@login_required
+def user_dashboard(request):
+    orders = Order.objects.filter(user=request.user).order_by("-created_at")
+
+    context = {
+        "orders": orders,
+        "total_orders": orders.count(),
+        "completed_orders": orders.filter(verified=True).count(),
+        "digital_products": orders.filter(
+            verified=True,
+            purchase_completed=True
+        ).count(),
+        "total_spent": orders.filter(
+            verified=True
+        ).aggregate(total=models.Sum("amount"))["total"] or 0,
+        "purchases": orders.filter(
+            verified=True,
+            purchase_completed=True
+        ),
+    }
+
+    return render(request, "accounts/user_dashboard.html", context)
+
+
+
+
+@login_required
+def user_logout(request):
+    """
+    Display logout confirmation page.
+    Logout only when user confirms.
+    """
+    if request.method == "POST":
+        logout(request)
+        return redirect("home")   # Change 'home' to your homepage URL name
+
+    return render(request, "accounts/logout.html")
 

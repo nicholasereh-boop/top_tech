@@ -50,7 +50,7 @@ NICO_APP/
 
 ├── apps/
 │
-├── config/
+├── toptech/
 │
 ├── docs/
 │
@@ -89,6 +89,7 @@ delivery/
 notifications/
 orders/
 payments/
+store/
 wishlist/
 ```
 
