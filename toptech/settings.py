@@ -1,8 +1,11 @@
 import os
 from pathlib import Path
-
 from dotenv import load_dotenv
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env file
+load_dotenv(BASE_DIR / ".env")
 """
 Django settings for the toptech (NICO_APP) project.
 
@@ -10,9 +13,6 @@ See https://docs.djangoproject.com/en/6.0/topics/settings/ for a full
 list of settings and their values.
 """
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-load_dotenv(BASE_DIR / ".env")
 
 
 # Security
@@ -83,29 +83,35 @@ WSGI_APPLICATION = "toptech.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": os.environ.get("DB_NAME", "ecommerce_db"),
-#         "USER": os.environ.get("DB_USER", "database_admin"),
-#         "PASSWORD": os.environ.get("264668@Nike"),
-#         "HOST": os.environ.get("DB_HOST", "localhost"),
-#         "PORT": os.environ.get("DB_PORT", "5432"),
-#     }
-# }
-
+# -------------------------------------------------------
+# Database (PostgreSQL - Neon)
+# -------------------------------------------------------
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "ecommerce_db",
-        "USER": "database_admin",
-        "PASSWORD": "264668@Nike",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": int(os.getenv("DB_PORT", 5432)),
+        "OPTIONS": {
+            "sslmode": "require",
+        },
+        "CONN_MAX_AGE": 600,
+        "CONN_HEALTH_CHECKS": True,
     }
 }
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "ecommerce_db",
+#         "USER": "database_admin",
+#         "PASSWORD": "264668@Nike",
+#         "HOST": "localhost",
+#         "PORT": "5432",
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
